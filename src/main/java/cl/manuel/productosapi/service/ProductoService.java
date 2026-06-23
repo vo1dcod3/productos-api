@@ -67,4 +67,8 @@ public class ProductoService {
     private ProductoResponseDTO toResponseDTO(Producto p) {
         return new ProductoResponseDTO(p.getId(), p.getNombre(), p.getCategoria(), p.getPrecio(), p.getStock());
     }
+
+    public List<String> obtenerCategorias() {
+        return productoRepository.findCategoriasActivas();
+    }
 }

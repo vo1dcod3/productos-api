@@ -56,4 +56,9 @@ public class ProductoController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/categorias")
+    public ResponseEntity<List<String>> obtenerCategorias() {
+        return ResponseEntity.ok(productoService.obtenerCategorias());
+    }
 }
