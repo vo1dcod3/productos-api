@@ -9,7 +9,7 @@ API REST desarrollada con Spring Boot para gestionar un catálogo de productos.
 - Spring Data JPA + Hibernate
 - PostgreSQL 16
 - Maven
-- Docker
+- Docker + Docker Compose
 
 ## Funcionalidades
 
@@ -18,6 +18,8 @@ API REST desarrollada con Spring Boot para gestionar un catálogo de productos.
 - DTOs para separar la capa de datos de la API
 - Validaciones con Bean Validation
 - Manejo global de excepciones
+- Endpoint de categorías únicas desde la BD
+- CORS configurado globalmente
 
 ## Endpoints
 
@@ -26,18 +28,31 @@ API REST desarrollada con Spring Boot para gestionar un catálogo de productos.
 | GET | `/api/productos` | Listar productos activos |
 | GET | `/api/productos/{id}` | Obtener producto por id |
 | GET | `/api/productos/buscar?categoria=...` | Filtrar por categoría |
+| GET | `/api/productos/categorias` | Listar categorías únicas activas |
 | POST | `/api/productos` | Crear producto |
 | PUT | `/api/productos/{id}` | Actualizar producto |
 | DELETE | `/api/productos/{id}` | Borrado lógico |
 
 ## Cómo ejecutar
 
-### Requisitos
+### Opción 1 — Docker Compose (recomendado)
+
+Levanta PostgreSQL + Spring Boot con un solo comando:
+
+```bash
+docker compose up
+```
+
+La API queda disponible en `http://localhost:8080`
+
+### Opción 2 — Local
+
+#### Requisitos
 - Java 21
 - Maven
 - Docker
 
-### 1. Levantar PostgreSQL
+#### 1. Levantar PostgreSQL
 
 ```bash
 docker run --name postgres-fullstack \
@@ -48,13 +63,11 @@ docker run --name postgres-fullstack \
   -d postgres:16
 ```
 
-### 2. Ejecutar la aplicación
+#### 2. Ejecutar la aplicación
 
 ```bash
 mvn spring-boot:run
 ```
-
-La API queda disponible en `http://localhost:8080`
 
 ## Ejemplo de uso
 
@@ -68,4 +81,9 @@ curl -X POST http://localhost:8080/api/productos \
 **Listar productos:**
 ```bash
 curl http://localhost:8080/api/productos
+```
+
+**Listar categorías:**
+```bash
+curl http://localhost:8080/api/productos/categorias
 ```
