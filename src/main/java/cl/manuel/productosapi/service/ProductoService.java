@@ -1,5 +1,7 @@
 package cl.manuel.productosapi.service;
 
+import cl.manuel.productosapi.categoria.model.Categoria;
+import cl.manuel.productosapi.categoria.repository.CategoriaRepository;
 import cl.manuel.productosapi.dto.ProductoRequestDTO;
 import cl.manuel.productosapi.dto.ProductoResponseDTO;
 import cl.manuel.productosapi.model.Producto;
@@ -14,42 +16,48 @@ import java.util.stream.Collectors;
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    public ProductoService(ProductoRepository productoRepository) {
+    public ProductoService(ProductoRepository productoRepository, CategoriaRepository categoriaRepository) {
         this.productoRepository = productoRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     public List<ProductoResponseDTO> obtenerTodos() {
         return productoRepository.findByActivoTrue()
                 .stream()
-                .map(p -> toResponseDTO(p))
+                .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     public Optional<ProductoResponseDTO> obtenerPorId(Long id) {
         return productoRepository.findById(id)
-                .map(p -> toResponseDTO(p));
+                .map(this::toResponseDTO);
     }
 
-    public List<ProductoResponseDTO> obtenerPorCategoria(String categoria) {
-        return productoRepository.findByCategoriaAndActivoTrue(categoria)
+    public List<ProductoResponseDTO> obtenerPorCategoria(String nombre) {
+        return productoRepository.findByCategoria_NombreAndActivoTrue(nombre)
                 .stream()
-                .map(p -> toResponseDTO(p))
+                .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     public ProductoResponseDTO crear(ProductoRequestDTO dto) {
-        Producto producto = new Producto(dto.getNombre(), dto.getCategoria(), dto.getPrecio(), dto.getStock());
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+        Producto producto = new Producto(dto.getNombre(), categoria, dto.getPrecio(), dto.getStock());
         return toResponseDTO(productoRepository.save(producto));
     }
 
-    public Optional<ProductoResponseDTO> actualizar(Long id, ProductoRequestDTO datos) {
+    public Optional<ProductoResponseDTO> actualizar(Long id, ProductoRequestDTO dto) {
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
         return productoRepository.findById(id)
                 .map(producto -> {
-                    producto.setNombre(datos.getNombre());
-                    producto.setCategoria(datos.getCategoria());
-                    producto.setPrecio(datos.getPrecio());
-                    producto.setStock(datos.getStock());
+                    producto.setNombre(dto.getNombre());
+                    producto.setCategoria(categoria);
+                    producto.setPrecio(dto.getPrecio());
+                    producto.setStock(dto.getStock());
                     return toResponseDTO(productoRepository.save(producto));
                 });
     }
@@ -65,10 +73,15 @@ public class ProductoService {
     }
 
     private ProductoResponseDTO toResponseDTO(Producto p) {
-        return new ProductoResponseDTO(p.getId(), p.getNombre(), p.getCategoria(), p.getPrecio(), p.getStock());
-    }
-
-    public List<String> obtenerCategorias() {
-        return productoRepository.findCategoriasActivas();
+        Long categoriaId = p.getCategoria() != null ? p.getCategoria().getId() : null;
+        String categoriaNombre = p.getCategoria() != null ? p.getCategoria().getNombre() : "Sin categoría";
+        return new ProductoResponseDTO(
+                p.getId(),
+                p.getNombre(),
+                categoriaId,
+                categoriaNombre,
+                p.getPrecio(),
+                p.getStock()
+        );
     }
 }

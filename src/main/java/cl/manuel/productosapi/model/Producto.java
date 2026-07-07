@@ -1,5 +1,6 @@
 package cl.manuel.productosapi.model;
 
+import cl.manuel.productosapi.categoria.model.Categoria;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,8 +14,9 @@ public class Producto {
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
-    private String categoria;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
 
     @Column(nullable = false)
     private Double precio;
@@ -27,7 +29,7 @@ public class Producto {
 
     public Producto() {}
 
-    public Producto(String nombre, String categoria, Double precio, Integer stock) {
+    public Producto(String nombre, Categoria categoria, Double precio, Integer stock) {
         this.nombre = nombre;
         this.categoria = categoria;
         this.precio = precio;
@@ -37,8 +39,8 @@ public class Producto {
     public Long getId() { return id; }
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
-    public String getCategoria() { return categoria; }
-    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public Categoria getCategoria() { return categoria; }
+    public void setCategoria(Categoria categoria) { this.categoria = categoria; }
     public Double getPrecio() { return precio; }
     public void setPrecio(Double precio) { this.precio = precio; }
     public Integer getStock() { return stock; }

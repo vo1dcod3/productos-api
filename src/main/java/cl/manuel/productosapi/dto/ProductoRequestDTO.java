@@ -7,8 +7,8 @@ public class ProductoRequestDTO {
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
-    @NotBlank(message = "La categoría es obligatoria")
-    private String categoria;
+    @NotNull(message = "La categoría es obligatoria")
+    private Long categoriaId;
 
     @NotNull(message = "El precio es obligatorio")
     @Min(value = 0, message = "El precio no puede ser negativo")
@@ -22,8 +22,8 @@ public class ProductoRequestDTO {
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
-    public String getCategoria() { return categoria; }
-    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public Long getCategoriaId() { return categoriaId; }
+    public void setCategoriaId(Long categoriaId) { this.categoriaId = categoriaId; }
     public Double getPrecio() { return precio; }
     public void setPrecio(Double precio) { this.precio = precio; }
     public Integer getStock() { return stock; }

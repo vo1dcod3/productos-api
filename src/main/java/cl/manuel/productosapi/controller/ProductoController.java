@@ -28,7 +28,7 @@ public class ProductoController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductoResponseDTO> obtenerPorId(@PathVariable Long id) {
         return productoService.obtenerPorId(id)
-                .map(dto -> ResponseEntity.ok(dto))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -45,7 +45,7 @@ public class ProductoController {
     @PutMapping("/{id}")
     public ResponseEntity<ProductoResponseDTO> actualizar(@PathVariable Long id, @Valid @RequestBody ProductoRequestDTO dto) {
         return productoService.actualizar(id, dto)
-                .map(p -> ResponseEntity.ok(p))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -55,10 +55,5 @@ public class ProductoController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
-    }
-
-    @GetMapping("/categorias")
-    public ResponseEntity<List<String>> obtenerCategorias() {
-        return ResponseEntity.ok(productoService.obtenerCategorias());
     }
 }
