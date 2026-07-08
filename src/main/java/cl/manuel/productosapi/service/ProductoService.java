@@ -4,6 +4,7 @@ import cl.manuel.productosapi.categoria.model.Categoria;
 import cl.manuel.productosapi.categoria.repository.CategoriaRepository;
 import cl.manuel.productosapi.dto.ProductoRequestDTO;
 import cl.manuel.productosapi.dto.ProductoResponseDTO;
+import cl.manuel.productosapi.exception.RecursoNoEncontradoException;
 import cl.manuel.productosapi.model.Producto;
 import cl.manuel.productosapi.repository.ProductoRepository;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class ProductoService {
      */
     public ProductoResponseDTO crear(ProductoRequestDTO dto) {
         Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Categoría no encontrada"));
         Producto producto = new Producto(dto.getNombre(), categoria, dto.getPrecio(), dto.getStock());
         return toResponseDTO(productoRepository.save(producto));
     }
@@ -66,7 +67,7 @@ public class ProductoService {
      */
     public Optional<ProductoResponseDTO> actualizar(Long id, ProductoRequestDTO dto) {
         Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Categoría no encontrada"));
         return productoRepository.findById(id)
                 .map(producto -> {
                     producto.setNombre(dto.getNombre());

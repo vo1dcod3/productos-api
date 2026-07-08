@@ -4,6 +4,7 @@ import cl.manuel.productosapi.auth.dto.AuthResponseDTO;
 import cl.manuel.productosapi.auth.dto.LoginRequestDTO;
 import cl.manuel.productosapi.auth.dto.RegisterRequestDTO;
 import cl.manuel.productosapi.auth.service.AuthService;
+import cl.manuel.productosapi.exception.CredencialesInvalidasException;
 import cl.manuel.productosapi.exception.GlobalExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,16 +72,16 @@ class AuthControllerTest {
     }
 
     @Test
-    void login_conCredencialesInvalidas_debeRetornar400() throws Exception {
+    void login_conCredencialesInvalidas_debeRetornar401() throws Exception {
         LoginRequestDTO dto = new LoginRequestDTO();
         dto.setEmail("user@test.cl");
         dto.setPassword("claveMala");
         when(authService.login(any(LoginRequestDTO.class)))
-                .thenThrow(new RuntimeException("Credenciales inválidas"));
+                .thenThrow(new CredencialesInvalidasException("Credenciales inválidas"));
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
     }
 }

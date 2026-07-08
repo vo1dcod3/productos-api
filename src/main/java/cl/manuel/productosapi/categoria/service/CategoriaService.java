@@ -4,6 +4,7 @@ import cl.manuel.productosapi.categoria.dto.CategoriaRequestDTO;
 import cl.manuel.productosapi.categoria.dto.CategoriaResponseDTO;
 import cl.manuel.productosapi.categoria.model.Categoria;
 import cl.manuel.productosapi.categoria.repository.CategoriaRepository;
+import cl.manuel.productosapi.exception.RecursoDuplicadoException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class CategoriaService {
      */
     public CategoriaResponseDTO crear(CategoriaRequestDTO dto) {
         if (categoriaRepository.existsByNombreAndActivoTrue(dto.getNombre())) {
-            throw new RuntimeException("Ya existe una categoría con ese nombre");
+            throw new RecursoDuplicadoException("Ya existe una categoría con ese nombre");
         }
         Categoria categoria = new Categoria(dto.getNombre());
         categoriaRepository.save(categoria);

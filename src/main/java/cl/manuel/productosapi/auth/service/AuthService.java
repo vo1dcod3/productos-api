@@ -5,6 +5,8 @@ import cl.manuel.productosapi.auth.dto.LoginRequestDTO;
 import cl.manuel.productosapi.auth.dto.RegisterRequestDTO;
 import cl.manuel.productosapi.auth.model.Usuario;
 import cl.manuel.productosapi.auth.repository.UsuarioRepository;
+import cl.manuel.productosapi.exception.CredencialesInvalidasException;
+import cl.manuel.productosapi.exception.RecursoDuplicadoException;
 import cl.manuel.productosapi.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,7 +36,7 @@ public class AuthService {
      */
     public AuthResponseDTO registrar(RegisterRequestDTO dto) {
         if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException("El email ya está registrado");
+            throw new RecursoDuplicadoException("El email ya está registrado");
         }
 
         Usuario usuario = new Usuario(
@@ -55,11 +57,11 @@ public class AuthService {
     public AuthResponseDTO login(LoginRequestDTO dto) {
         // Mensaje genérico a propósito: no revelar si el email existe (seguridad)
         Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
+                .orElseThrow(() -> new CredencialesInvalidasException("Credenciales inválidas"));
 
         if (!passwordEncoder.matches(dto.getPassword(), usuario.getPassword())) {
             // Mismo mensaje que el email inexistente: evita distinguir usuario válido de contraseña errónea
-            throw new RuntimeException("Credenciales inválidas");
+            throw new CredencialesInvalidasException("Credenciales inválidas");
         }
 
         String token = jwtService.generarToken(usuario.getEmail());

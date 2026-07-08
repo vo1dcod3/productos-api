@@ -4,6 +4,7 @@ import cl.manuel.productosapi.categoria.dto.CategoriaRequestDTO;
 import cl.manuel.productosapi.categoria.dto.CategoriaResponseDTO;
 import cl.manuel.productosapi.categoria.service.CategoriaService;
 import cl.manuel.productosapi.exception.GlobalExceptionHandler;
+import cl.manuel.productosapi.exception.RecursoDuplicadoException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -82,16 +83,16 @@ class CategoriaControllerTest {
     }
 
     @Test
-    void crear_conNombreDuplicado_debeRetornar400() throws Exception {
+    void crear_conNombreDuplicado_debeRetornar409() throws Exception {
         CategoriaRequestDTO dto = new CategoriaRequestDTO();
         dto.setNombre("Periféricos");
         when(categoriaService.crear(any(CategoriaRequestDTO.class)))
-                .thenThrow(new RuntimeException("Ya existe una categoría con ese nombre"));
+                .thenThrow(new RecursoDuplicadoException("Ya existe una categoría con ese nombre"));
 
         mockMvc.perform(post("/api/categorias")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isConflict());
     }
 
     @Test
