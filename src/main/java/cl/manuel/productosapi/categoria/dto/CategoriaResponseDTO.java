@@ -1,5 +1,8 @@
 package cl.manuel.productosapi.categoria.dto;
 
+/**
+ * DTO de salida con los datos de una categoría que se devuelven al cliente.
+ */
 public class CategoriaResponseDTO {
 
     private Long id;

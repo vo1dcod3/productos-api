@@ -2,6 +2,9 @@ package cl.manuel.productosapi.exception;
 
 import java.util.Map;
 
+/**
+ * Estructura uniforme de error que la API devuelve al cliente: código, mensaje y detalle por campo cuando aplica.
+ */
 public class ErrorResponseDTO {
 
     private int status;

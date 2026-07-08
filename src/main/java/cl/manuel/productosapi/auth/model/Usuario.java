@@ -2,6 +2,10 @@ package cl.manuel.productosapi.auth.model;
 
 import jakarta.persistence.*;
 
+/**
+ * Entidad de dominio que representa un usuario del sistema, con sus credenciales
+ * (email y contraseña codificada) y su rol para el control de acceso.
+ */
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
@@ -10,6 +14,7 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // unique: el email identifica al usuario y no puede repetirse.
     @Column(nullable = false, unique = true)
     private String email;
 

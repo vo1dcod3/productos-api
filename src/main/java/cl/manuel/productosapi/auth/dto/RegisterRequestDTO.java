@@ -1,5 +1,8 @@
 package cl.manuel.productosapi.auth.dto;
 
+/**
+ * DTO de entrada con los datos para registrar un nuevo usuario.
+ */
 public class RegisterRequestDTO {
     private String email;
     private String password;

@@ -3,6 +3,10 @@ package cl.manuel.productosapi.model;
 import cl.manuel.productosapi.categoria.model.Categoria;
 import jakarta.persistence.*;
 
+/**
+ * Entidad de dominio que representa un producto del catálogo, asociado a una
+ * categoría y con control de stock, precio y estado activo (borrado lógico).
+ */
 @Entity
 @Table(name = "productos")
 public class Producto {
@@ -14,6 +18,8 @@ public class Producto {
     @Column(nullable = false)
     private String nombre;
 
+    // EAGER: la categoría se lee junto con el producto para evitar
+    // LazyInitializationException al mapear a DTO fuera de la transacción.
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;

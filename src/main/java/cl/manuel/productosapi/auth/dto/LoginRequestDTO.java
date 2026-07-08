@@ -1,5 +1,8 @@
 package cl.manuel.productosapi.auth.dto;
 
+/**
+ * DTO de entrada con las credenciales para iniciar sesión.
+ */
 public class LoginRequestDTO {
     private String email;
     private String password;

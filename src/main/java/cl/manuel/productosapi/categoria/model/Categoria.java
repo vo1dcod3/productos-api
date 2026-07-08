@@ -2,6 +2,10 @@ package cl.manuel.productosapi.categoria.model;
 
 import jakarta.persistence.*;
 
+/**
+ * Entidad de dominio que representa una categoría de productos, con estado
+ * activo para borrado lógico.
+ */
 @Entity
 @Table(name = "categorias")
 public class Categoria {
@@ -10,6 +14,7 @@ public class Categoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // unique: no se permiten dos categorías con el mismo nombre.
     @Column(nullable = false, unique = true)
     private String nombre;
 

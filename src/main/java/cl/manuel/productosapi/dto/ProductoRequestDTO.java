@@ -2,6 +2,10 @@ package cl.manuel.productosapi.dto;
 
 import jakarta.validation.constraints.*;
 
+/**
+ * DTO de entrada para crear o actualizar un producto, con las validaciones de
+ * sus campos.
+ */
 public class ProductoRequestDTO {
 
     @NotBlank(message = "El nombre es obligatorio")

@@ -16,6 +16,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+/**
+ * Configuración de seguridad: arma la cadena de filtros, define endpoints
+ * públicos vs protegidos, habilita CORS y expone el codificador de contraseñas.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -26,11 +30,17 @@ public class SecurityConfig {
         this.jwtAuthFilter = jwtAuthFilter;
     }
 
+    /**
+     * Define la cadena de filtros de seguridad de la aplicación.
+     * @return la cadena configurada con CORS, política sin estado y filtro JWT.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // API REST con JWT: no usa cookies de sesión, por eso se deshabilita CSRF.
                 .csrf(csrf -> csrf.disable())
+                // Sin sesión en servidor: cada request se autentica por su token.
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
@@ -41,6 +51,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Se permite /error para que las excepciones se reenvíen ahí
+                        // sin quedar bloqueadas por el filtro y perder el status real.
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )

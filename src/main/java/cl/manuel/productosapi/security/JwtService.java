@@ -10,6 +10,10 @@ import javax.crypto.SecretKey;
 import java.util.Base64;
 import java.util.Date;
 
+/**
+ * Servicio de tokens JWT: genera el token al autenticar y lo valida en cada
+ * request. Firma con clave HMAC derivada del secreto configurado.
+ */
 @Service
 public class JwtService {
 
@@ -24,6 +28,10 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /**
+     * Genera un token JWT firmado para el email dado.
+     * @return el token compacto listo para enviar al cliente.
+     */
     public String generarToken(String email) {
         return Jwts.builder()
                 .subject(email)
@@ -33,10 +41,18 @@ public class JwtService {
                 .compact();
     }
 
+    /**
+     * Extrae el email (subject) contenido en el token.
+     * @return el email del usuario dueño del token.
+     */
     public String extraerEmail(String token) {
         return getClaims(token).getSubject();
     }
 
+    /**
+     * Valida que el token corresponda al email dado y que no esté expirado.
+     * @return true si el token es válido para ese usuario.
+     */
     public boolean validarToken(String token, String email) {
         String emailToken = extraerEmail(token);
         return emailToken.equals(email) && !estaExpirado(token);

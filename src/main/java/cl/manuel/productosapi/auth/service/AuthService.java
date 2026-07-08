@@ -9,6 +9,10 @@ import cl.manuel.productosapi.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * Lógica de autenticación: registro de usuarios y login, emitiendo un token JWT.
+ * Encapsula el cifrado de contraseñas y la generación de tokens para mantener el resto de la API ajeno a esos detalles.
+ */
 @Service
 public class AuthService {
 
@@ -24,6 +28,10 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Registra un usuario nuevo y devuelve un token JWT ya autenticado.
+     * @throws RuntimeException si el email ya está registrado.
+     */
     public AuthResponseDTO registrar(RegisterRequestDTO dto) {
         if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new RuntimeException("El email ya está registrado");
@@ -40,11 +48,17 @@ public class AuthService {
         return new AuthResponseDTO(token);
     }
 
+    /**
+     * Valida las credenciales y devuelve un token JWT si son correctas.
+     * @throws RuntimeException si el email no existe o la contraseña no coincide.
+     */
     public AuthResponseDTO login(LoginRequestDTO dto) {
+        // Mensaje genérico a propósito: no revelar si el email existe (seguridad)
         Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new RuntimeException("Credenciales inválidas"));
 
         if (!passwordEncoder.matches(dto.getPassword(), usuario.getPassword())) {
+            // Mismo mensaje que el email inexistente: evita distinguir usuario válido de contraseña errónea
             throw new RuntimeException("Credenciales inválidas");
         }
 

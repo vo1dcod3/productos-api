@@ -14,6 +14,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Filtro que se ejecuta una vez por request: lee el token del header
+ * Authorization, lo valida y, si es correcto, autentica al usuario en el
+ * contexto de seguridad con su rol.
+ */
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -33,6 +38,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
+        // Sin header Bearer se deja pasar la request: SecurityConfig decide si
+        // el endpoint es público o rechaza por falta de autenticación.
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;

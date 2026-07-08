@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Lógica de negocio de productos: consultas, creación, actualización y borrado lógico.
+ * Traduce entre entidades ({@link Producto}) y DTOs para no exponer el modelo de datos hacia la API.
+ */
 @Service
 public class ProductoService {
 
@@ -23,6 +27,7 @@ public class ProductoService {
         this.categoriaRepository = categoriaRepository;
     }
 
+    /** Devuelve todos los productos activos (no eliminados lógicamente). */
     public List<ProductoResponseDTO> obtenerTodos() {
         return productoRepository.findByActivoTrue()
                 .stream()
@@ -30,11 +35,13 @@ public class ProductoService {
                 .collect(Collectors.toList());
     }
 
+    /** Busca un producto por id. Optional vacío si no existe. */
     public Optional<ProductoResponseDTO> obtenerPorId(Long id) {
         return productoRepository.findById(id)
                 .map(this::toResponseDTO);
     }
 
+    /** Devuelve los productos activos de una categoría, buscada por su nombre. */
     public List<ProductoResponseDTO> obtenerPorCategoria(String nombre) {
         return productoRepository.findByCategoria_NombreAndActivoTrue(nombre)
                 .stream()
@@ -42,6 +49,10 @@ public class ProductoService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Crea un producto asociándolo a una categoría existente.
+     * @throws RuntimeException si la categoría indicada no existe.
+     */
     public ProductoResponseDTO crear(ProductoRequestDTO dto) {
         Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
@@ -49,6 +60,10 @@ public class ProductoService {
         return toResponseDTO(productoRepository.save(producto));
     }
 
+    /**
+     * Actualiza un producto existente. Optional vacío si el producto no existe.
+     * @throws RuntimeException si la categoría indicada no existe.
+     */
     public Optional<ProductoResponseDTO> actualizar(Long id, ProductoRequestDTO dto) {
         Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
@@ -62,6 +77,10 @@ public class ProductoService {
                 });
     }
 
+    /**
+     * Borrado lógico: marca el producto como inactivo en vez de eliminarlo de la base.
+     * @return true si el producto existía y se desactivó; false si no existía.
+     */
     public boolean eliminar(Long id) {
         return productoRepository.findById(id)
                 .map(producto -> {
@@ -72,7 +91,9 @@ public class ProductoService {
                 .orElse(false);
     }
 
+    /** Convierte una entidad Producto en su DTO de respuesta, tolerando categoría nula. */
     private ProductoResponseDTO toResponseDTO(Producto p) {
+        // Un producto podría no tener categoría (datos antiguos): se refleja como "Sin categoría".
         Long categoriaId = p.getCategoria() != null ? p.getCategoria().getId() : null;
         String categoriaNombre = p.getCategoria() != null ? p.getCategoria().getNombre() : "Sin categoría";
         return new ProductoResponseDTO(
